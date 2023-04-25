@@ -5,16 +5,19 @@ import {
     Button,
     FormErrorMessage,
     FormLabel,
-    Input, Heading
+    Input, Heading, Text
 } from "@chakra-ui/react";
 import {Form, Formik, useFormik} from "formik";
 import * as Yup from "yup"
-import {TextField} from "./TextField";
+import {TextField} from "../TextField";
 import {useNavigate} from "react-router-dom";
 import {formSchema} from '../../schemas/index'
+import {useContext, useState} from "react";
+import {AccountContext} from "../AccountContext";
 
 export const Login = () => {
-
+    const {setUser} = useContext(AccountContext)
+    const [error, setError] = useState(null)
     const navigate = useNavigate()
 
     return (
@@ -25,16 +28,6 @@ export const Login = () => {
                     password: ""
                 }}
                 validationSchema={formSchema}
-                // validationSchema={Yup.object({
-                //     username: Yup.string()
-                //         .required("Username required!")
-                //         .min(6, "Username too short!")
-                //         .max(28, "Username too long!"),
-                //     password: Yup.string()
-                //         .required("Password required!")
-                //         .min(6, "Password too short!")
-                //         .max(28, "Password too long!"),
-                // })}
                 onSubmit={(values, actions) => {
                     const vals = {...values}
                     actions.resetForm();
@@ -46,15 +39,20 @@ export const Login = () => {
                         },
                         body: JSON.stringify(vals),
                     }).catch(err => {
-                        return
+                        return;
                     }).then(res => {
                         if (!res || !res.ok || res.status >= 400) {
-                            return
+                            return;
                         }
                         return res.json()
                     }).then(data => {
                         if (!data) return;
-                        console.log(data)
+                        setUser({...data})
+                        if (data.status) {
+                            setError(data.status)
+                        } else if (data.loggedIn) {
+                            navigate('/home');
+                        }
                     })
                 }}>
                 <VStack
@@ -68,6 +66,9 @@ export const Login = () => {
                     <Heading>
                         Log In
                     </Heading>
+                    <Text as={'p'} color={'red.500'}>
+                        {error}
+                    </Text>
 
                     <TextField
                         name={"username"}
@@ -90,6 +91,5 @@ export const Login = () => {
                 </VStack>
             </Formik>
         </>
-    )
-        ;
+    );
 };

@@ -12,4 +12,11 @@ const formSchema = Yup.object({
 
 })
 
-module.exports = {formSchema}
+const friendSchema = Yup.object({
+    friendName: Yup.string()
+        .required("Username required")
+        .min(6, "Invalid Username")
+        .max(28, "Invalid username")
+})
+
+module.exports = {formSchema, friendSchema}
