@@ -9,7 +9,7 @@ const authRouter = require("./routers/authRouter");
 require("connect-redis").default;
 require('./redis');
 const {sessionMiddleware, wrap, corsConfig} = require("./controllers/serverController");
-const {authorizeUser, addFriend, initializeUser, onDisconnect} = require("./controllers/socketController");
+const {authorizeUser, addFriend, initializeUser, onDisconnect} = require("./controllers/socketController/socketController");
 const {dm} = require("./db/dm");
 require('dotenv').config();
 

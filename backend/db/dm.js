@@ -1,8 +1,6 @@
 const redisClient = require("../redis");
 module.exports.dm = async (socket, message) => {
-    // const message = {...message, from: socket.user.userid};
     message.from = socket.user.userid
-    //to from content
     const messageString = [
         message.to,
         message.from,

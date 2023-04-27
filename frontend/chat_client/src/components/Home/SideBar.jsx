@@ -3,7 +3,7 @@ import {
     Circle,
     Divider,
     Heading,
-    HStack,
+    HStack, Icon, Image,
     Tab,
     TabList,
     Tabs,
@@ -12,21 +12,54 @@ import {
     VStack
 } from "@chakra-ui/react";
 import {ChatIcon} from "@chakra-ui/icons";
-import {useContext} from "react";
+import {useContext, useMemo} from "react";
 import {FriendContext} from "./Home";
 import {AddFriendModal} from "./AddFriendModal";
+import {logoutIcon} from "./logoutIcon";
+import {AccountContext, UserContext} from "../AccountContext";
+import {useNavigate} from "react-router-dom";
 
 export const SideBar = props => {
     const {friendList} = useContext(FriendContext);
+    const {setUser} = useContext(AccountContext);
+    const navigate = useNavigate()
+
+    useMemo(() => friendList);
+
+    const handleLogout = () => {
+        fetch("http://localhost:4000/auth/logout", {
+            method: 'GET'
+        })
+            .catch(err => {
+                console.log(err)
+                return err
+            })
+            .then(r => {
+                if (!r.ok || !r || r.status >= 400) {
+                    console.log('error')
+                    return
+                }
+                navigate('/')
+                setUser({loggedIn: false})
+                // console.log(user)
+            })
+    }
+
     const {isOpen, onOpen, onClose} = useDisclosure();
     return (
         <>
             <VStack py={"1.4rem"}>
-                <HStack justify={"space-evenly"} w={"100%"}>
+                <HStack alignItems={"center"} justify={"space-between"} px={"20px"} w={"100%"}>
                     <Heading size="md">Add Friend</Heading>
-                    <Button onClick={onOpen}>
-                        <ChatIcon/>
-                    </Button>
+                    <HStack>
+                        <Button onClick={onOpen}>
+                            <ChatIcon/>
+                        </Button>
+                        <Button onClick={() => handleLogout()}>
+                            <Icon as={logoutIcon}/>
+                        </Button>
+                    </HStack>
+
                 </HStack>
                 <Divider/>
                 <VStack as={TabList}>
